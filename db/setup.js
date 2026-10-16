@@ -43,11 +43,11 @@ async function setupLocal() {
   } catch (err) {
     if (err.cause?.code !== 'ECONNREFUSED' && !/fetch failed/.test(err.message)) throw err
   }
-  const { openLocalDb, setupLocalDb, LOCAL_DB_DIR } = await import('../server/local-db.js')
+  const { openLocalDb, setupLocalDb, localDbDir } = await import('../server/local-db.js')
   const { pg } = await openLocalDb()
   try {
     const rows = await setupLocalDb(pg)
-    console.log(`✔ Ran db/schema.sql and db/seed.sql on the local database (${LOCAL_DB_DIR})`)
+    console.log(`✔ Ran db/schema.sql and db/seed.sql on the local database (${localDbDir()})`)
     return rows
   } finally {
     await pg.close()

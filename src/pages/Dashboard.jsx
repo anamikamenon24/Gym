@@ -14,6 +14,7 @@ import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { useChartColors } from '../context/ThemeContext'
 import { useApi } from '../lib/useApi'
+import { percent } from '../lib/progress'
 import { classes } from '../data/mockData'
 
 const greeting = () => {
@@ -138,6 +139,7 @@ export default function Dashboard() {
   const { week, activity, streak, todayWorkout } = data
   const lastIdx = activity.length - 1
   const totalMinutes = activity.reduce((s, d) => s + d.minutes, 0)
+  const activeDays = activity.filter((d) => d.minutes > 0).length
   const left = week.workouts.target - week.workouts.done
   const subtitle =
     left <= 0
@@ -213,7 +215,7 @@ export default function Dashboard() {
                   </ProgressRing>
                 </div>
                 <p className="mt-3 text-sm font-medium">{r.label}</p>
-                <p className="text-xs text-muted">{Math.min(100, Math.round((r.value / r.max) * 100))}% of goal</p>
+                <p className="text-xs text-muted">{percent(r.value, r.max)}% of goal</p>
               </div>
             ))}
           </div>
@@ -230,7 +232,9 @@ export default function Dashboard() {
               <p className="font-display text-2xl font-bold">
                 <AnimatedCounter value={totalMinutes} /> <span className="text-sm font-normal text-muted">min</span>
               </p>
-              <p className="text-xs text-muted">{activity.filter((d) => d.minutes > 0).length} active days</p>
+              <p className="text-xs text-muted">
+                {activeDays} active day{activeDays === 1 ? '' : 's'}
+              </p>
             </div>
           </div>
           <div className="h-56">

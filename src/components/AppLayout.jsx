@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { useLocation, useOutlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar from './Sidebar'
@@ -23,7 +24,8 @@ export default function AppLayout() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
             >
-              {outlet}
+              {/* Keeps the sidebar on screen while a page's code loads */}
+              <Suspense fallback={<div className="min-h-[60vh]" aria-busy="true" />}>{outlet}</Suspense>
             </motion.div>
           </AnimatePresence>
         </div>

@@ -2,6 +2,9 @@ import { SignJWT, jwtVerify } from 'jose'
 import { HttpError } from './db.js'
 
 const COOKIE = 'pf_session'
+// Non-secret companion cookie the frontend can read, so it only calls /api/auth/me when a session
+// might exist (avoids a 401 console error on every logged-out page view). Grants no access by itself.
+const HINT = 'pf_hint'
 const MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 const secret = () => {
@@ -18,8 +21,8 @@ const parseCookies = (header = '') =>
       .map(([k, ...v]) => [k, decodeURIComponent(v.join('='))]),
   )
 
-const cookieAttrs = (maxAge) =>
-  [`Path=/`, `HttpOnly`, `SameSite=Lax`, `Max-Age=${maxAge}`, process.env.NODE_ENV === 'production' ? 'Secure' : null]
+const cookieAttrs = (maxAge, httpOnly = true) =>
+  [`Path=/`, httpOnly ? 'HttpOnly' : null, `SameSite=Lax`, `Max-Age=${maxAge}`, process.env.NODE_ENV === 'production' ? 'Secure' : null]
     .filter(Boolean)
     .join('; ')
 
@@ -29,11 +32,11 @@ export async function setSession(res, userId) {
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
     .sign(secret())
-  res.setHeader('Set-Cookie', `${COOKIE}=${token}; ${cookieAttrs(MAX_AGE)}`)
+  res.setHeader('Set-Cookie', [`${COOKIE}=${token}; ${cookieAttrs(MAX_AGE)}`, `${HINT}=1; ${cookieAttrs(MAX_AGE, false)}`])
 }
 
 export function clearSession(res) {
-  res.setHeader('Set-Cookie', `${COOKIE}=; ${cookieAttrs(0)}`)
+  res.setHeader('Set-Cookie', [`${COOKIE}=; ${cookieAttrs(0)}`, `${HINT}=; ${cookieAttrs(0, false)}`])
 }
 
 // Returns the logged-in user id, or null.

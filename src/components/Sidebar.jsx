@@ -1,28 +1,15 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Flame, LogOut } from 'lucide-react'
 import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
+import { useLogout } from './UserMenu'
 import { navItems } from './navItems'
 import { useApp } from '../context/AppContext'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
 
 export default function Sidebar() {
   const { user } = useApp()
-  const { logout } = useAuth()
-  const toast = useToast()
-  const navigate = useNavigate()
-
-  const onLogout = async () => {
-    try {
-      await logout()
-      toast({ title: 'Logged out', message: 'See you at your next session 👋', type: 'info' })
-      navigate('/')
-    } catch (e) {
-      toast({ title: "Couldn't log out", message: e.message, type: 'error' })
-    }
-  }
+  const onLogout = useLogout()
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line/[0.06] bg-surface/40 px-4 py-6 backdrop-blur-xl md:flex">
       <div className="px-2">

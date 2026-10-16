@@ -180,6 +180,7 @@ export default function Landing() {
         </div>
       </header>
 
+      <main>
       {/* Hero */}
       <section className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-16 pt-12 sm:px-6 md:pt-20 lg:grid-cols-[1.1fr_1fr] lg:px-10">
         <motion.div initial="hidden" animate="show" variants={stagger}>
@@ -293,6 +294,8 @@ export default function Landing() {
           <QuoteCard className="flex items-center" />
         </div>
       </section>
+
+      </main>
 
       <Footer />
     </div>

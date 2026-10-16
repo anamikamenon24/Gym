@@ -1,4 +1,4 @@
-// Local development database: PGlite (real Postgres compiled to WebAssembly), stored in .data/pglite.
+// Local development database: PGlite (real Postgres compiled to WebAssembly).
 // Used only when DATABASE_URL is empty. Exposes the same tagged-template API as Neon's `neon()`,
 // so the /api code runs unchanged against either database.
 import { mkdirSync, readFileSync } from 'node:fs'
@@ -7,9 +7,17 @@ import { PGlite } from '@electric-sql/pglite'
 
 export const LOCAL_DB_DIR = fileURLToPath(new URL('../.data/pglite', import.meta.url))
 
-export async function openLocalDb() {
-  mkdirSync(LOCAL_DB_DIR, { recursive: true })
-  const pg = new PGlite(LOCAL_DB_DIR)
+// PULSEFIT_DB_DIR=memory gives a throwaway in-memory database (tests, Lighthouse).
+export const localDbDir = () => process.env.PULSEFIT_DB_DIR || LOCAL_DB_DIR
+
+export async function openLocalDb(dir = localDbDir()) {
+  let pg
+  if (dir === 'memory') {
+    pg = new PGlite()
+  } else {
+    mkdirSync(dir, { recursive: true })
+    pg = new PGlite(dir)
+  }
   await pg.waitReady
 
   // sql`SELECT ... ${value}` → parameterised query, resolves to an array of rows (like neon()).

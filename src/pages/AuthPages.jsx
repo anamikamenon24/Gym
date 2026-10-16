@@ -9,7 +9,7 @@ import { useToast } from '../context/ToastContext'
 
 function AuthShell({ title, subtitle, children, footer }) {
   return (
-    <div className="ambient relative grid min-h-dvh place-items-center px-4 py-10">
+    <main className="ambient relative grid min-h-dvh place-items-center px-4 py-10">
       <div className="grid-bg pointer-events-none absolute inset-0" />
       <div className="absolute right-4 top-4">
         <ThemeToggle />
@@ -29,7 +29,7 @@ function AuthShell({ title, subtitle, children, footer }) {
           <p className="mt-6 text-center text-sm text-muted">{footer}</p>
         </div>
       </motion.div>
-    </div>
+    </main>
   )
 }
 
@@ -58,7 +58,7 @@ function PasswordField(props) {
       label="Password"
       type={show ? 'text' : 'password'}
       trailing={
-        <button type="button" onClick={() => setShow((s) => !s)} className="text-muted hover:text-fg" aria-label={show ? 'Hide password' : 'Show password'}>
+        <button type="button" onClick={() => setShow((s) => !s)} className="-m-2 grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg" aria-label={show ? 'Hide password' : 'Show password'}>
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       }

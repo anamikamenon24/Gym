@@ -5,11 +5,10 @@ import { findUserById, getStreak, publicUser } from '../_lib/users.js'
 export default route({
   async GET(req, res) {
     const id = await getUserId(req)
-    if (!id) return res.json({ user: null })
-    const user = await findUserById(id)
+    const user = id && (await findUserById(id))
     if (!user) {
-      clearSession(res)
-      return res.json({ user: null })
+      clearSession(res) // drop stale or invalid cookies
+      return res.status(401).json({ error: 'Please log in to continue.' })
     }
     res.json({ user: { ...publicUser(user), streak: await getStreak(id, localDate(req)) } })
   },

@@ -55,7 +55,8 @@ export default function LiveWorkout() {
     return () => clearInterval(t)
   }, [])
 
-  const remaining = rest.pausedLeft ?? (rest.endsAt ? Math.max(0, (rest.endsAt - now) / 1000) : 0)
+  // `now` ticks every 200ms, so it can lag behind endsAt's start — clamp so a 45s rest never shows 0:46.
+  const remaining = Math.min(rest.total, rest.pausedLeft ?? (rest.endsAt ? Math.max(0, (rest.endsAt - now) / 1000) : 0))
   const resting = rest.total > 0 && remaining > 0
   const paused = rest.pausedLeft != null
 
@@ -228,7 +229,7 @@ export default function LiveWorkout() {
                 <div>
                   {resting ? (
                     <>
-                      <p className="font-display text-7xl font-bold tabular-nums">{fmt(Math.ceil(remaining))}</p>
+                      <p className="font-display text-7xl font-bold tabular-nums" data-testid="rest-timer" role="timer" aria-live="off">{fmt(Math.ceil(remaining))}</p>
                       <p className="mt-1 text-sm text-muted">of {fmt(rest.total)}</p>
                     </>
                   ) : finished ? (

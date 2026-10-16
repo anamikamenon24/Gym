@@ -58,7 +58,7 @@ export default function Classes() {
                 )}
                 <span className="relative text-xs font-semibold uppercase">{i === todayIdx ? 'Today' : d}</span>
                 <span className="relative mt-0.5 font-display text-lg font-bold">{count}</span>
-                <span className="relative text-[10px] opacity-70">classes</span>
+                <span className="relative text-[10px]">classes</span>
               </button>
             )
           })}

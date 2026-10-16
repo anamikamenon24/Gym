@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useId } from 'react'
+import { ratio } from '../lib/progress'
 
 export default function ProgressRing({
   value,
@@ -15,7 +16,7 @@ export default function ProgressRing({
   const id = useId().replace(/:/g, '')
   const r = (size - stroke) / 2
   const circ = 2 * Math.PI * r
-  const pct = Math.max(0, Math.min(1, max ? value / max : 0))
+  const pct = ratio(value, max)
 
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }}>

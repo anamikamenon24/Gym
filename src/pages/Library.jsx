@@ -87,6 +87,7 @@ export default function Library() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search exercises"
+            aria-label="Search exercises"
             className="w-full rounded-2xl border border-line/10 bg-fg/[0.03] py-3 pl-11 pr-10 text-fg placeholder:text-muted focus:border-accent/50 focus:outline-none focus:ring-4 focus:ring-lime/10"
           />
           {query && (
@@ -129,6 +130,8 @@ export default function Library() {
               return (
                 <motion.article
                   key={e.id}
+                  data-testid="exercise-card"
+                  data-group={e.group}
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}

@@ -17,12 +17,23 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null)
 
   const refresh = useCallback(async () => {
+    // pf_hint is set alongside the httpOnly session cookie; without it there's no session to check.
+    if (!document.cookie.split('; ').includes('pf_hint=1')) {
+      setUser(null)
+      setLoading(false)
+      return
+    }
     try {
       const { user } = await api('auth/me')
       setUser(user)
       setError(null)
     } catch (e) {
-      setError(e)
+      if (e.status === 401) {
+        setUser(null) // session expired — just logged out, not an error
+        setError(null)
+      } else {
+        setError(e)
+      }
     } finally {
       setLoading(false)
     }

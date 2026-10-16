@@ -9,7 +9,7 @@
   --fg: 12 16 22;
   --muted: 92 102 118;
   --line: 12 16 22;
-  --accent: 77 140 10;
+  --accent: 61 110 8; /* #3D6E08 — ≥4.5:1 on white for small text */
   --accent2: 8 145 178;
   --glass-alpha: 0.72;
   --line-alpha: 0.08;
@@ -90,6 +90,11 @@
   width: 600px; height: 600px; bottom: -220px; left: -200px;
   background: radial-gradient(circle, rgba(34,229,255,0.14), transparent 70%);
 }
+/* Light mode: the -400 status tints are too pale on white for text; use deeper steps (WCAG AA). */
+html:not(.dark) .text-orange-400 { color: #c2410c; }
+html:not(.dark) .text-rose-400 { color: #be123c; }
+html:not(.dark) .text-amber-400 { color: #b45309; }
+
 html:not(.dark) .ambient::before { background: radial-gradient(circle, rgba(132,204,22,0.22), transparent 70%); }
 html:not(.dark) .ambient::after { background: radial-gradient(circle, rgba(6,182,212,0.16), transparent 70%); }
 
