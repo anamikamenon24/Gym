@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens. `accent` is the readable accent for text/lines; buttons always use the lime fill. */
+:root {
+  --bg: 244 246 240;
+  --surface: 255 255 255;
+  --fg: 12 16 22;
+  --muted: 92 102 118;
+  --line: 12 16 22;
+  --accent: 77 140 10;
+  --accent2: 8 145 178;
+  --glass-alpha: 0.72;
+  --line-alpha: 0.08;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 7 9 12;
+  --surface: 18 22 30;
+  --fg: 240 244 248;
+  --muted: 146 158 176;
+  --line: 255 255 255;
+  --accent: 198 255 61;
+  --accent2: 34 229 255;
+  --glass-alpha: 0.55;
+  --line-alpha: 0.08;
+  color-scheme: dark;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    min-height: 100dvh;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { background: #C6FF3D; color: #07090C; }
+}
+
+@layer components {
+  .glass {
+    background: rgb(var(--surface) / var(--glass-alpha));
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgb(var(--line) / var(--line-alpha));
+    @apply rounded-3xl shadow-glass;
+  }
+  .text-gradient {
+    @apply bg-pulse-gradient bg-clip-text text-transparent;
+    background-size: 200% 100%;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-lime px-5 py-3 font-display font-semibold text-ink-950
+           shadow-glow transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:translate-y-0;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-line/10 bg-fg/[0.03] px-5 py-3 font-display font-semibold
+           text-fg transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-fg/[0.06] active:scale-[0.98];
+  }
+  .chip {
+    @apply rounded-full border border-line/10 px-4 py-2 text-sm font-medium text-muted transition-all duration-200 hover:text-fg;
+  }
+  .chip-active {
+    @apply border-transparent bg-lime text-ink-950 shadow-glow hover:text-ink-950;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-muted;
+  }
+}
+
+/* Ambient background glow */
+.ambient::before,
+.ambient::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+}
+.ambient::before {
+  width: 520px; height: 520px; top: -160px; right: -120px;
+  background: radial-gradient(circle, rgba(198,255,61,0.18), transparent 70%);
+}
+.ambient::after {
+  width: 600px; height: 600px; bottom: -220px; left: -200px;
+  background: radial-gradient(circle, rgba(34,229,255,0.14), transparent 70%);
+}
+html:not(.dark) .ambient::before { background: radial-gradient(circle, rgba(132,204,22,0.22), transparent 70%); }
+html:not(.dark) .ambient::after { background: radial-gradient(circle, rgba(6,182,212,0.16), transparent 70%); }
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgb(var(--line) / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--line) / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+.skeleton {
+  background: linear-gradient(100deg, rgb(var(--line) / 0.05) 30%, rgb(var(--line) / 0.12) 50%, rgb(var(--line) / 0.05) 70%);
+  background-size: 300% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+@keyframes skeleton {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes dash {
+  0% { stroke-dashoffset: 120; }
+  45%, 60% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -120; }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+.pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 6rem); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
