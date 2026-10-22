@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS users (
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Server-side settings, e.g. an auto-generated JWT secret when JWT_SECRET isn't set in the environment.
+CREATE TABLE IF NOT EXISTS app_settings (
+  key    TEXT PRIMARY KEY,
+  value  TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS exercises (
   id            SERIAL PRIMARY KEY,
   name          TEXT NOT NULL UNIQUE,

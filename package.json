@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
+    "@netlify/database": "^2.0.1",
     "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^11.11.17",

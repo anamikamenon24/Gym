@@ -1,0 +1,29 @@
+# Netlify deployment for PulseFit
+#  - Builds the React app with Vite and publishes dist/ (publishing the repo root gives a blank page)
+#  - /api/* runs netlify/functions/api.mjs, which reuses the handlers in /api
+#  - Netlify Database is created automatically on deploy because @netlify/database is installed,
+#    and the migrations in netlify/database/migrations are applied before each deploy goes live
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # @netlify/database needs Node 22.12+; Netlify Functions use this version too
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+
+# API first (rules are matched top to bottom)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Single-page app: every other path loads index.html so /dashboard etc. work on refresh
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,4 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose'
+import { randomBytes } from 'node:crypto'
+import { db } from './db.js'
 import { HttpError } from './db.js'
 
 const COOKIE = 'pf_session'
@@ -7,10 +9,29 @@ const COOKIE = 'pf_session'
 const HINT = 'pf_hint'
 const MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
-const secret = () => {
-  if (!process.env.JWT_SECRET) throw new HttpError(500, 'JWT_SECRET is not configured on the server.')
-  return new TextEncoder().encode(process.env.JWT_SECRET)
+// Signing key: JWT_SECRET from the environment if set. Otherwise a strong random secret is generated
+// once and kept in the database (app_settings), so a fresh deploy works with zero configuration.
+let storedSecret = null
+async function secret() {
+  if (process.env.JWT_SECRET) return new TextEncoder().encode(process.env.JWT_SECRET)
+  if (!storedSecret) {
+    storedSecret = (async () => {
+      const sql = db()
+      const candidate = randomBytes(48).toString('base64url')
+      await sql`INSERT INTO app_settings (key, value) VALUES ('jwt_secret', ${candidate}) ON CONFLICT (key) DO NOTHING`
+      const [row] = await sql`SELECT value FROM app_settings WHERE key = 'jwt_secret'`
+      if (!row?.value) throw new HttpError(500, 'Could not set up login security. Please try again.')
+      return new TextEncoder().encode(row.value)
+    })().catch((err) => {
+      storedSecret = null // retry next time (e.g. database briefly unreachable)
+      throw err
+    })
+  }
+  return storedSecret
 }
+
+// For tests: forget the cached database secret.
+export const _resetSecretCache = () => (storedSecret = null)
 
 const parseCookies = (header = '') =>
   Object.fromEntries(
@@ -31,7 +52,7 @@ export async function setSession(res, userId) {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
-    .sign(secret())
+    .sign(await secret())
   res.setHeader('Set-Cookie', [`${COOKIE}=${token}; ${cookieAttrs(MAX_AGE)}`, `${HINT}=1; ${cookieAttrs(MAX_AGE, false)}`])
 }
 
@@ -43,8 +64,9 @@ export function clearSession(res) {
 export async function getUserId(req) {
   const token = parseCookies(req.headers.cookie)[COOKIE]
   if (!token) return null
+  const key = await secret() // outside the try: a database outage must surface as 503, not "logged out"
   try {
-    const { payload } = await jwtVerify(token, secret(), { algorithms: ['HS256'] })
+    const { payload } = await jwtVerify(token, key, { algorithms: ['HS256'] })
     const id = Number(payload.sub)
     return Number.isInteger(id) ? id : null
   } catch {
