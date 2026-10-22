@@ -49,7 +49,7 @@ export function ToastProvider({ children }) {
                     {t.message && <p className="mt-0.5 text-sm text-muted">{t.message}</p>}
                   </div>
                 </div>
-                <button onClick={() => dismiss(t.id)} className="absolute right-3 top-3 text-muted hover:text-fg" aria-label="Dismiss">
+                <button onClick={() => dismiss(t.id)} className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg" aria-label="Dismiss">
                   <X className="h-4 w-4" />
                 </button>
                 <motion.div

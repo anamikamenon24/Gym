@@ -163,6 +163,32 @@ Performance varies by about ±3 between runs; the ranges show the runs I did.
 
 ---
 
+## Round 2 — screen-by-screen check (22 October 2026)
+
+New file `tests/e2e/screens.spec.js` adds checks for:
+- **Screens:** Progress (line chart, trophy badges), Class Booking (spots go down, toast, full classes can't be booked), Profile (avatar, level, badges), the Dashboard rings filling and the chart bars, and the rest timer draining its circle;
+- **Branding:** the gradient logo and the favicon;
+- **Screen sizes:** 375 / 768 / 1440 px (bottom bar vs sidebar, no sideways scroll, tap targets at least 32px);
+- **Theme toggle:** works on every screen, with a contrast check in both themes;
+- **Extras:** quote of the day, every link and nav item, and that no button is dead.
+
+New script: `npm run test:e2e:dev` runs the whole browser suite against the **dev server** too, so React's development-only warnings also count as failures.
+
+| Run | Passed | Failed | Skipped |
+|---|---:|---:|---:|
+| `npm run test` (backend) | 92 | 0 | 0 |
+| `npm run test:e2e` (production build) | 96 | 0 | 8 |
+| `npm run test:e2e:dev` (dev server) | 96 | 0 | 8 |
+
+Skipped = desktop-only checks (keyboard, and the fixed-size screen and theme sweeps) on the phone browser, which would only repeat the same work.
+
+Bugs fixed in this round:
+1. **Footer:** 12 links went nowhere (`href="#"`: Pricing, About, Careers…). They now point to real screens: Workout Library, Live Workout, Progress, Features, Classes, Dashboard, Sign up, Log in, Profile.
+2. **Profile "Sign out":** it still showed "This is a demo, no account backend" and didn't log out. It now logs out properly.
+3. **Profile "Workout reminders":** it said "Reminders on" but did nothing. It now honestly says "Coming soon".
+4. **Tiny tap targets on phones:** the toast close ✕ (16px), the workout-complete ✕ (20px) and the search clear ✕ (16px) now have 32–40px tap areas. The icons look the same.
+5. **Phone bottom bar:** the "Train" label became unreadable when bright content scrolled under the see-through bar. The bar is now 92% solid; it's still glass.
+
 ## New files
 
 - `vitest.config.js`, `tests/api/*.test.js`, `tests/unit/progress.test.js`: backend and logic tests

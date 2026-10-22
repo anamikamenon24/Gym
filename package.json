@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:dev": "playwright test",
     "test:all": "npm run test && npm run test:e2e",
     "lighthouse": "node scripts/lighthouse.mjs"
   },

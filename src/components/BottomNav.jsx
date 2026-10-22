@@ -12,7 +12,8 @@ export default function BottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label="Primary"
     >
-      <div className="glass flex items-center justify-around !rounded-[28px] px-2 py-2">
+      {/* More opaque than other glass so content scrolling underneath never washes out the labels */}
+      <div className="glass flex items-center justify-around !rounded-[28px] px-2 py-2" style={{ background: 'rgb(var(--surface) / 0.92)' }}>
         {items.map(({ to, short, icon: Icon, featured }) => (
           <NavLink key={to} to={to} className="relative flex-1">
             {({ isActive }) =>

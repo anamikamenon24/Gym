@@ -91,7 +91,7 @@ export default function Library() {
             className="w-full rounded-2xl border border-line/10 bg-fg/[0.03] py-3 pl-11 pr-10 text-fg placeholder:text-muted focus:border-accent/50 focus:outline-none focus:ring-4 focus:ring-lime/10"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg" aria-label="Clear search">
+            <button onClick={() => setQuery('')} className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg text-muted hover:text-fg" aria-label="Clear search">
               <X className="h-4 w-4" />
             </button>
           )}

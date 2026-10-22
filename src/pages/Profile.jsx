@@ -9,6 +9,7 @@ import AnimatedCounter from '../components/AnimatedCounter'
 import { useApp } from '../context/AppContext'
 import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
+import { useLogout } from '../components/UserMenu'
 import { achievements } from '../data/mockData'
 
 const Icons = { Flame, Sunrise, Trophy, Calendar, Dumbbell, Timer, Zap, Medal, HeartPulse, Award }
@@ -17,6 +18,7 @@ export default function Profile() {
   const { user } = useApp()
   const { theme, toggle } = useTheme()
   const toast = useToast()
+  const onLogout = useLogout()
   const unlocked = achievements.filter((a) => a.unlocked).length
   const xpPct = (user.xp / user.xpNext) * 100
 
@@ -155,12 +157,12 @@ export default function Profile() {
             <motion.span layout className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow ${theme === 'dark' ? 'right-0.5' : 'left-0.5'}`} />
           </span>
         </button>
-        <button onClick={() => toast({ title: 'Reminders on', message: "We'll nudge you at 6:30am on training days." })} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3.5 text-left transition hover:bg-fg/[0.04]">
+        <button onClick={() => toast({ title: 'Coming soon', message: 'Workout reminders land in a future update.', type: 'info' })} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3.5 text-left transition hover:bg-fg/[0.04]">
           <Bell className="h-5 w-5 text-muted" />
           <span className="flex-1 font-medium">Workout reminders</span>
           <ChevronRight className="h-4 w-4 text-muted" />
         </button>
-        <button onClick={() => toast({ title: "Can't sign out right now", message: 'This is a demo — there is no account backend yet.', type: 'error' })} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3.5 text-left text-rose-400 transition hover:bg-rose-500/10">
+        <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3.5 text-left text-rose-400 transition hover:bg-rose-500/10">
           <LogOut className="h-5 w-5" />
           <span className="flex-1 font-medium">Sign out</span>
         </button>

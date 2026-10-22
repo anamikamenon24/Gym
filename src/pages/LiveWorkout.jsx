@@ -347,7 +347,7 @@ export default function LiveWorkout() {
               transition={{ type: 'spring', stiffness: 260, damping: 22, delay: 0.2 }}
               className="glass relative w-full max-w-md overflow-hidden p-8 text-center"
             >
-              <button onClick={() => setShowModal(false)} className="absolute right-4 top-4 text-muted hover:text-fg" aria-label="Close">
+              <button onClick={() => setShowModal(false)} className="absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-xl text-muted hover:text-fg" aria-label="Close">
                 <X className="h-5 w-5" />
               </button>
               <div className="absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-lime/30 blur-3xl" />
