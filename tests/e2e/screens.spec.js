@@ -44,15 +44,27 @@ test.describe('Dashboard', () => {
 
   test('rings fill up and the chart bars grow (animation)', async ({ page }) => {
     await userWithCompletedWorkout(page, 'rings')
+    // Record every ring's fill from the very first frame, so the check doesn't depend on timing
+    await page.addInitScript(() => {
+      window.__ringMax = 0
+      const tick = () => {
+        for (const c of document.querySelectorAll('svg circle[stroke^="url(#ring-"]')) {
+          const v = parseFloat(c.getAttribute('stroke-dashoffset') ?? getComputedStyle(c).strokeDashoffset)
+          if (v > window.__ringMax) window.__ringMax = v
+        }
+        requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    })
     await page.goto('/dashboard')
     const ring = visible(page.locator('svg circle[stroke^="url(#ring-"]')).first()
     await expect(ring).toBeVisible()
     const circ = await ring.evaluate((el) => parseFloat(el.getAttribute('stroke-dasharray')))
-    const early = await strokeOffset(ring)
-    await page.waitForTimeout(1800)
+    await page.waitForTimeout(1800) // animation is 1.4s
     const late = await strokeOffset(ring)
+    const startedAt = await page.evaluate(() => window.__ringMax)
     expect(late, 'ring ends partly filled (1 of 4 workouts)').toBeLessThan(circ)
-    expect(early, 'ring started emptier and animated').toBeGreaterThan(late)
+    expect(startedAt, 'ring started empty (offset = full circumference) and animated to its value').toBeGreaterThan(late)
 
     const todayBar = page.locator('.recharts-bar-rectangle path').last()
     await expect(todayBar).toBeAttached()
@@ -241,7 +253,10 @@ test.describe('Light/dark toggle on every screen', () => {
         await settle(page)
         for (const target of ['light', 'dark']) {
           await visible(page.getByRole('button', { name: `Switch to ${target} mode` })).first().click()
-          await page.waitForTimeout(500)
+          // The page fades its background over 0.4s — check contrast only once it has fully settled
+          const finalBg = target === 'dark' ? 'rgb(7, 9, 12)' : 'rgb(244, 246, 240)'
+          await page.waitForFunction((bg) => getComputedStyle(document.body).backgroundColor === bg, finalBg)
+          await page.waitForTimeout(150)
           const isDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
           if (isDark !== (target === 'dark')) problems.push(`${path}: toggle to ${target} failed`)
           const { violations } = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze()
